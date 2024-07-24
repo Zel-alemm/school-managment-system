@@ -5,7 +5,7 @@
 }
 
 body {
- background-color: rgb(12, 12, 71);
+ background-color: #222831;
   display: grid;
   overflow-x: hidden;
   max-width: 100vw;
@@ -276,32 +276,38 @@ nav a{
 .nav-link{
     font-size: 1.5rem;
     font-family: 'Playfair Display', serif;
-    color: rgb(17, 17, 213);
+    color: #00ADB5;
 }
 .nav-link:hover{
-    color: #e5097b;
+    color: 393E46;
 }
 
 .navbar{
     background: transparent;
-    background-color: rgb(225, 224, 235);
+    background-color: #222831;
+    /* border-width: ; */
+    /* border-bottom: 1px solid #00ADB5; */
   
 }
 .navbar-brand{
     padding-left: 4rem;
   font-family: 'Playfair Display', serif;
       font-size: 45px;
-      color: aqua !important;
+      color: #00ADB5 !important;
   }
   .login a{
-    background-color: #1ba9ea;
+    background-color: #393E46;
+    color: #00ADB5;
   }
   .login a:hover{
     background-color: aqua;
     box-shadow:  0 0 5px cyan, 0 0 5px cyan, 0 0 25px cyan, 0 0 100px cyan, 0 0 200px cyan;
   }
   .btn {
-    background: rgb(72, 222, 89);
+    background: #222831;
+    color: #00ADB5;
+    position: relative;
+  z-index: 1;
   }
   .btn:hover {
     background-color: aqua;
@@ -679,14 +685,15 @@ height: 530px;
 .card{
   width: 22rem;
   height: 22rem;
-  background: #102784;
+  background: #393E46;
   color: white;
+  border: 2px;
   border:  0 0 5px cyan, 0 0 5px cyan, 0 0 25px cyan, 0 0 100px cyan, 0 0 200px cyan;
-  box-shadow:  0 0 5px cyan, 0 0 5px cyan, 0 0 40px cyan;
+  /* box-shadow:  0 0 5px cyan, 0 0 5px cyan, 0 0 40px cyan; */
   font-family: 'Playfair Display', serif; 
 }
 .card h1{
-  color: #193ceb;
+  color: #EEEEEE;
 }
 .card p{
   color: aqua;
@@ -726,14 +733,14 @@ transform: scale(1.1);
   margin-bottom: 4rem;
 }
 .Abo1-text h1{
-   color: #193ceb;
+   color: #EEEEEE;
   font-size: 4rem;
 }
 .Abo1-text p{
   padding-left: 18rem;
   padding-right: 18rem;
   font-size: 1.4rem;
-  color: rgb(146, 146, 228);
+  color: #00ADB5;
 }
 .tab1{
   display: flex;
@@ -753,14 +760,14 @@ padding-bottom: 5rem;
   padding: 6px 4px;
   font-size: 17px;
   width: 25%;
-  color: white;
+  color: #EEEEEE;
 }
 .tablink1::after{
   content: "";
   width: 0;
   align-items: center;
   height: 3px;
-  background-color: red; /* This sets the color of the underline */
+  background-color: #00ADB5; /* This sets the color of the underline */
   position: absolute;
   bottom: 0;
   left: 0;
@@ -782,13 +789,13 @@ padding-bottom: 5rem;
 
 
 .card3{
-  width: 23rem;
-  height: 30rem;
+  width: 100%;
+  height: 100%;
 }
 .card-img-top{
-  width: 23rem;
+  width: 100%;
   border-radius: 9px;
-  height: 30rem;
+  height: 100%;
 }
  .card3-title{
   position: relative;
@@ -807,57 +814,249 @@ padding-bottom: 5rem;
   position: relative;
  }
 
-.footer{
-  padding-top: 3rem;
-  background: white;
- }
- .footer-img{
-  padding-left: 10rem;
- }
- .footer-img img{
-width: 80%;
-height: 80%;
- }
- .footer-navbar{
-  padding-right: 20rem;
-  padding-top: 7rem;
- }
- .footer-navbar li{
-  display: inline-block;
- }
- .footer-navbar li a{
-  font-size: 1.5rem;
-  padding-right: 1.5rem;
-  color:brown;
- }
- .ulleft{
-  padding-left: 10rem;
- }
- .ulleft li{
-  display: inline-block;
-  color:#193ceb;
-  font-size: 1.3rem;
- }
- .text-white{
-  color: black;
- }
- .n{
- float: right;
- }
- .copyright-link{
-  text-decoration: none;
- }
- .copyright p{
-  color: #193ceb;
- }
+ .testimonials {
+  background-color: #222831;
+  color: #eeeeee;
+  padding: 60px 0;
+}
 
+.testimonials h2 {
+  color: #00ADB5;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.testimonial-card {
+  background: linear-gradient(145deg, #393E46, #222831);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card .testimonial-image {
+  border-radius: 50%;
+  object-fit: cover;
+  width: 150px !important; /* Ensure the width is applied */
+  height: 150px !important; /* Ensure the height is applied */
+  margin: 20px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 4px solid #00ADB5;
+}
+
+
+.testimonial-card .card-body {
+  text-align: center;
+}
+
+.testimonial-card .card-text {
+  font-size: 16px; /* Slightly smaller font size for better balance */
+  line-height: 1.6;
+  color: #eeeeee;
+  font-style: italic;
+}
+
+.testimonial-card .card-title {
+  font-size: 18px; /* Slightly smaller font size for better balance */
+  color: #00ADB5;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.testimonial-card:hover .testimonial-image {
+  transform: scale(1.05);
+}
+
+.container {
+  width: 85%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+ .footer {
+  padding-top: 3rem;
+  background: #393E46;
+  /* border-top: 1px solid #00ADB5; */
+}
+
+.footer-img {
+  padding-left: 10rem;
+}
+
+.footer-img img {
+  width: 60%;
+  height: 60%;
+}
+
+.footer-navbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 1rem 0;
+  margin-top: 4rem;
+  margin-right: 1rem;
+  /* background-color: #393E46; */
+  border-radius: 8px;
+}
+
+.footer-navbar li {
+  list-style: none;
+  margin: 0.5rem 0;
+}
+
+.footer-navbar li a {
+  font-size: 1.2rem;
+  color: #EEEEEE;
+  text-decoration: none;
+  transition: color 0.3s, border-bottom 0.3s;
+  padding-bottom: 0.5rem;
+}
+
+.footer-navbar li a:hover {
+  color: #00ADB5;
+  border-bottom: 2px solid #00ADB5;
+}
+
+.ulleft {
+  padding-left: 10rem;
+}
+
+.ulleft li {
+  display: inline-block;
+  color: #00ADB5;
+  font-size: 1.3rem;
+}
+
+.ulleft li a {
+  color: #00ADB5;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.text-white {
+  color: #00ADB5;
+}
+
+
+
+.copyright-link {
+  text-decoration: none;
+}
+
+.copyright p {
+  color: #00ADB5;
+}
+
+
+.footer-navbar li a {
+  position: relative;
+  z-index: 1;
+}
+.btn-back-top{
+  background-color: #393E46;
+  color: #00ADB5;
+  float: right;
+}
 /* =============ABOUT====== */
 
+/* Container */
+/* General Styles */
+/* Global Styles */
+
+
+/* Global Styles */
+.about1 {
+  font-family: 'PT Serif', serif;
+  color: #222831; /* Dark Gray for body text */
+  background-color: #222831; /* Dark Gray background */
+  margin: 0;
+  padding: 0;
+}
+
+/* About Section */
 .about {
-  height: 100vh;
-  background-image: url('./image\41-1-ethio7.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 50px 0; /* Adjust as needed */
+  margin-top: 10rem;
+  padding: 20px;
+  background-color: #393E46; /* Medium Gray for content background */
+  color: #EEEEEE; /* Light Gray for text */
+}
+
+/* Accordion Styles */
+.accordion-button {
+  background-color: #393E46; /* Medium Gray for button background */
+  color: #EEEEEE; /* Light Gray text color */
+  border: none;
+  font-weight: 500;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #00ADB5; /* Cyan when expanded */
+  color: #EEEEEE; /* Light Gray text color */
+}
+
+.accordion-body {
+  color: #EEEEEE; /* Light Gray for text */
+  background-color: #393E46; /* Medium Gray background for accordion body */
+}
+
+/* Button Styles */
+.btn-link {
+  color: #00ADB5; /* Cyan for button text */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-link:hover {
+  color: #222831; /* Dark Gray for hover effect */
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+/* Section Headers */
+.accordion-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+/* Image Styles */
+img {
+  max-width: 100%; /* Ensures images are responsive */
+  height: auto; /* Maintains aspect ratio */
+  border-radius: 8px; /* Adds rounded corners to images */
+  display: block; /* Removes bottom space under image */
+  margin-top: 1rem; /* Adds top margin for spacing */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .accordion-header h2 {
+    font-size: 1rem;
+  }
+}
+
+/* Enhancements */
+.accordion-button {
+  transition: background-color 0.3s ease;
+}
+
+.accordion-button:hover {
+  background-color: #007a7a; /* Slightly darker Cyan for hover effect */
 }

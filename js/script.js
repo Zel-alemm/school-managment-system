@@ -72,3 +72,26 @@ function openCity(evt, cityName, videoSrc) {
   
   // Get the element with id="defaultOpen" and click on it
   document.getElementById("defaultOpen").click();
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function (event) {
+            event.preventDefault();
+            
+            // Get the target section
+            const target = document.querySelector(this.getAttribute('data-target'));
+            
+            // Hide all sections
+            document.querySelectorAll('.collapse').forEach(collapse => {
+                if (collapse !== target) {
+                    $(collapse).collapse('hide');
+                }
+            });
+            
+            // Show the target section
+            $(target).collapse('toggle');
+        });
+    });
+});
