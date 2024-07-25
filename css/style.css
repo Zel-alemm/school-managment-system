@@ -968,18 +968,14 @@ padding-bottom: 5rem;
 }
 /* =============ABOUT====== */
 
-/* Container */
 /* General Styles */
-/* Global Styles */
-
-
-/* Global Styles */
 .about1 {
   font-family: 'PT Serif', serif;
   color: #222831; /* Dark Gray for body text */
   background-color: #222831; /* Dark Gray background */
   margin: 0;
   padding: 0;
+  
 }
 
 /* About Section */
@@ -989,7 +985,21 @@ padding-bottom: 5rem;
   background-color: #393E46; /* Medium Gray for content background */
   color: #EEEEEE; /* Light Gray for text */
 }
-
+.image-gallery1{
+  margin-top: 10rem;
+  padding: 20px;
+  background-color: #393E46;
+  margin-bottom: 5rem;
+}
+.image-title {
+  color: #00ADB5;
+  margin-top: 10rem;
+  padding: 20px;
+  background-color: #393E46;
+}
+.accordion{
+  margin-bottom: 5rem;
+}
 /* Accordion Styles */
 .accordion-button {
   background-color: #393E46; /* Medium Gray for button background */
@@ -1032,6 +1042,96 @@ padding-bottom: 5rem;
   text-align: center;
 }
 
+.qoute {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  background-color: #222831; /* Dark Gray Background */
+  /* margin-left: 10rem;
+  margin-right: 10rem; */
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
+.qoute-title h1 {
+  font-size: 2.5rem;
+  color: #00ADB5; /* Cyan */
+  font-weight: 600;
+}
+
+.qoute-text {
+  padding-left: 3rem;
+  padding-right: 5rem;
+}
+
+.qoute-text h1 {
+  font-size: 4rem;
+  color: #00ADB5; /* Cyan */
+}
+
+.qoute-text p {
+  font-size: 2rem;
+  color: #EEEEEE; /* Light Gray */
+  line-height: 2rem;
+}
+
+
+.number {
+  padding-top: 6rem;
+  padding-bottom: 5rem;
+  background-color: #222831; /* Dark Gray Background */
+}
+
+.number-title h1 {
+  font-size: 2rem;
+  color: #00ADB5; /* Cyan */
+  padding-bottom: 3rem;
+}
+
+.number-body {
+  display: flex; /* Use flexbox to align items in a row */
+  justify-content: space-between; /* Distribute space evenly between items */
+  flex-wrap: wrap; /* Wrap items to the next line if necessary */
+}
+
+.numbe-content {
+  width: 23%; /* Adjust width to fit the content within the row */
+  padding-bottom: 2rem;
+  padding-top: 2rem;
+  margin-right: 1rem;
+  background-color: #393E46; /* Medium Gray for background of individual content blocks */
+  border-radius: 5px; /* Rounded corners */
+}
+
+.numbe-content h1 {
+  font-size: 4rem;
+  color: #00ADB5; /* Cyan */
+}
+
+.numbe-content p {
+  font-size: 1.6rem;
+  color: #EEEEEE; /* Light Gray */
+}
+
+@media (max-width: 992px) {
+  .numbe-content {
+    width: 48%; /* Adjust width for medium devices */
+    margin-right: 1%;
+  }
+}
+
+@media (max-width: 768px) {
+  .numbe-content {
+    width: 100%; /* Full width for small devices */
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+
+
+
 /* Image Styles */
 img {
   max-width: 100%; /* Ensures images are responsive */
@@ -1041,7 +1141,19 @@ img {
   margin-top: 1rem; /* Adds top margin for spacing */
 }
 
-/* Responsive Styles */
+/* Image Gallery Styles */
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 1rem;
+}
+
+.gallery-item {
+  width: calc(33.333% - 10px); /* Three images per row with a small gap */
+  height: auto;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 10px;
@@ -1050,13 +1162,454 @@ img {
   .accordion-header h2 {
     font-size: 1rem;
   }
-}
 
+  .gallery-item {
+    width: calc(50% - 10px); /* Two images per row on smaller screens */
+  }
+}
+/* Carousel Styles */
+.carousel-item img {
+  max-height: 500px; /* Adjust based on desired height */
+  object-fit: cover; /* Ensures images cover the carousel area */
+  border-radius: 8px; /* Optional: Adds rounded corners to images */
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #00ADB5;
+  border-radius: 50%;
+}
+.carousel-control-prev-icon::before,
+.carousel-control-next-icon::before {
+  font-size: 2rem;
+}
 /* Enhancements */
 .accordion-button {
   transition: background-color 0.3s ease;
 }
 
 .accordion-button:hover {
-  background-color: #007a7a; /* Slightly darker Cyan for hover effect */
+  background-color: #00ADB5; /* Cyan background on hover */
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.accordion-button:after {
+  color: #EEEEEE; /* Light Gray arrow color */
+}
+
+.accordion-body ul {
+  padding-left: 20px; /* Add left padding for list items */
+}
+
+
+/* General Styles for the Container */
+.campus-life  {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #222831;
+}
+
+/* Heading Styles */
+.campus-life h2 {
+  color: #00ADB5;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.campus-life h3 {
+  color: #00ADB5;
+  font-size: 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Section Styles */
+.campus-overview, .campus-facilities {
+  background-color: #393E46;
+  color: #EEEEEE;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.campus-overview p, .campus-facilities p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.campus-facilities ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.campus-facilities li {
+  background-color: #222831;
+  color: #EEEEEE;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.campus-facilities li strong {
+  color: #00ADB5;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .campus-life {
+      padding: 15px;
+  }
+
+ .campus-life h2 {
+      font-size: 2rem;
+  }
+
+ .campus-life h3 {
+      font-size: 1.5rem;
+  }
+}
+
+
+.container.admission-body {
+  max-width: 1200px;
+  margin: 0 auto;.container.admission-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    background-color: #222831; /* Dark Gray Background */
+    color: #EEEEEE; /* Light Gray Text */
+  }
+  
+  .admission-body h2 {
+    color: #00ADB5; /* Cyan */
+    margin-bottom: 30px;
+  }
+  
+  .admission-overview h3,
+  .application-process h3,
+  .requirements h3,
+  .contact-information h3 {
+    color: #00ADB5; /* Cyan */
+    border-bottom: 2px solid #00ADB5; /* Cyan */
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .admission-overview,
+  .application-process,
+  .requirements,
+  .contact-information {
+    background-color: #393E46; /* Medium Gray */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .admission-overview p,
+  .application-process p,
+  .requirements p,
+  .contact-information p {
+    line-height: 1.6;
+    color: #EEEEEE; /* Light Gray Text */
+  }
+  
+  .application-process ol,
+  .requirements ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  
+  .application-process ol li,
+  .requirements ul li {
+    margin-bottom: 10px;
+    color: #EEEEEE; /* Light Gray Text */
+  }
+  
+  .application-process ol li strong,
+  .requirements ul li strong {
+    color: #00ADB5; /* Cyan */
+  }
+  
+  strong {
+    color: #00ADB5; /* Cyan */
+  }
+  
+  .contact-information {
+    color: #EEEEEE; /* Light Gray Text */
+  }
+  
+  .contact-information p {
+    margin-bottom: 10px;
+  }
+  
+  padding: 0 15px;
+}
+
+.admission-body h2 {
+  color: #00ADB5; /* Cyan */
+}
+
+.admission-overview h3 {
+  color: #00ADB5; /* Cyan */
+  border-bottom: 2px solid #00ADB5; /* Cyan */
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.admission-overview,
+.application-process,
+.requirements,
+.contact-information {
+  background-color: #FFFFFF; /* White */
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.admission-overview p,
+.application-process p,
+.requirements p,
+.contact-information p {
+  line-height: 1.6;
+}
+
+.application-process ol, ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.application-process ol li, .requirements  ul li {
+  margin-bottom: 10px;
+}
+
+.application-process ol li strong, .requirements ul li strong {
+  color: #393E46; /* Medium Gray */
+}
+
+strong {
+  color: #222831; /* Dark Gray */
+}
+
+.application {
+  margin: 2rem auto;
+  padding: 3rem;
+  background-color: #222831; /* Dark Gray */
+  color: #EEEEEE; /* Light Gray */
+}
+
+.form-title {
+  color: #00ADB5; /* Cyan */
+  padding-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.form-content1,
+.form-content2 {
+  width: 100%;
+  border: 2px solid #00ADB5; /* Medium Gray */
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+}
+
+.form-content1 input,
+.form-content2 select,
+.form-content2 textarea {
+  background-color: #222831; /* Dark Gray */
+  color: #EEEEEE; /* Light Gray */
+  border: none;
+  padding: 0.75rem;
+  border-radius: 5px;
+}
+
+.form-content1 input::placeholder,
+.form-content2 select::placeholder,
+.form-content2 textarea::placeholder {
+  color: #EEEEEE; /* Light Gray */
+}
+
+.form-content2 {
+  margin-right: 0; /* Reset right margin */
+}
+
+.form-content2 select {
+  width: 100%;
+  padding: 0.75rem;
+}
+
+.form-content3 {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.form-content3 button {
+  background-color: #00ADB5; /* Cyan */
+  color: #222831; /* Dark Gray */
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.form-content3 button:hover {
+  background-color: #00A2A5; /* Slightly darker Cyan */
+}
+
+/* Section Styles */
+.academics {
+  margin-top: 10rem;
+}
+.academics-section {
+  background-color: #393E46; /* Medium Gray Background */
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Section Title */
+
+.section-title {
+  color: #00ADB5; /* Cyan */
+  font-size: 2.5rem;
+  border-bottom: 3px solid #00ADB5; /* Cyan */
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Section Content */
+.section-content {
+  color: #EEEEEE; /* Light Gray */
+  font-size: 1.2rem;
+  line-height: 1.8;
+  text-align: justify;
+  margin-bottom: 1rem;
+}
+
+/* Highlighted Content */
+.section-content.highlight {
+  background-color: rgba(0, 173, 181, 0.1); /* Cyan Highlight */
+  border-left: 5px solid #00ADB5; /* Cyan Border */
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Blockquote Style */
+.section-content blockquote {
+  color: #00ADB5; /* Cyan */
+  font-style: italic;
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+  border-left: 5px solid #00ADB5; /* Cyan Border */
+}
+
+/* Button Style */
+.section-content .cta-button {
+  background-color: #00ADB5; /* Cyan */
+  color: #222831; /* Dark Gray */
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.section-content .cta-button:hover {
+  background-color: #007B7E; /* Darker Cyan */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .section-content {
+    font-size: 1rem;
+  }
+
+  .section-content .cta-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+
+/* Student Life Styles */
+.student-life-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding: 2rem;
+}
+
+.student-life-detail {
+  background-color: #393E46; /* Medium Gray Background */
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin-bottom: 3rem;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.student-life-detail:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+.detail-title {
+  color: #00ADB5; /* Cyan */
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 3px solid #00ADB5; /* Cyan Border */
+  padding-bottom: 0.5rem;
+}
+
+.detail-content {
+  color: #EEEEEE; /* Light Gray */
+  font-size: 1.3rem;
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+}
+
+.image-gallery {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.gallery-image {
+  width: 30%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease-in-out;
+}
+
+.gallery-image:hover {
+  transform: scale(1.05);
+}
+
+.video-content {
+  width: 100%;
+  margin-top: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .gallery-image {
+    width: 100%;
+  }
 }

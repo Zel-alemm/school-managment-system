@@ -95,3 +95,23 @@ function openCity(evt, cityName, videoSrc) {
         });
     });
 });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  const countUpElements = document.querySelectorAll('.count-up');
+
+  countUpElements.forEach(element => {
+    const target = parseInt(element.getAttribute('data-target'), 10);
+    let count = 0;
+    const increment = Math.ceil(target / 100); // Adjust increment for smooth counting
+
+    const interval = setInterval(() => {
+      count += increment;
+      if (count >= target) {
+        count = target;
+        clearInterval(interval);
+      }
+      element.textContent = count.toLocaleString(); // Format number with commas
+    }, 10); // Adjust speed by changing the interval
+  });
+});
