@@ -1,0 +1,65 @@
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.admin-top .row {
+    display: flex;
+    background-color: #e8f3f3;
+}
+
+.admin-top .row .admin-left {
+    color: #fff;  
+    width: 20%;
+    background-color: yellowgreen;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.admin-top .row .admin-left .admin img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    display: block;
+    margin: 30px auto 10px;
+}
+.admin-top .row .admin-left .tab .tablinks .tooltip{
+   display: none;
+}
+.admin-top .row .admin-left .tab .tablinks:hover .tooltip{
+     display: block;
+}
+.admin-top .row .admin-left .tab {
+    margin-top: 15px;
+}
+.admin-top .row .admin-left .tab .tablinks {
+    display: flex;
+    align-items: center;
+    background-color: inherit;
+    color: #fff;
+    padding: 10px;
+    width: 96%;
+    outline: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 15px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin: 5px auto;
+    border-radius: 5px;
+}
+.admin-top .row .admin-left .tab .tablinks h4{
+       margin: 0px 0px 0px 15px;
+}
+.admin-top .row .admin-left .tab .tablinks.active{
+    background-color: #fff;
+    color: black;
+}
+.admin-top .row .admin-left .tab .tablinks:hover {
+    background-color: #fff;
+    color: black; 
+}

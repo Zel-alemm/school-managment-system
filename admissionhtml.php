@@ -1,3 +1,21 @@
+
+<?php
+
+error_reporting(0);
+session_start();
+session_destroy();
+
+if($_SESSION['message'])
+{
+    $message=$_SESSION['message'];
+
+    echo "<script type='text/javascript'> 
+    alert('$message');
+    </script>";
+    
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -109,62 +127,56 @@
                 <div class="form-title text-center" data-aos="fade-right" data-aos-delay="200">
                   <h1>Please fill the form presented below for registration</h1>
                 </div>
-                <form action="" data-aos="fade-right" data-aos-delay="200">
-                  <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                  <div class="form-floating form-content1 ">
-                  <input type="name" id="name" placeholder="e.g. Zelalem" class="form-control"/>
-                  <label for="name"  class="form-label">First name</label>
-                </div>
-            
-                <div class="form-floating form-content1 ">
-                  <input type="name" id="name" placeholder="e.g. Zelalem" class="form-control"/>
-                  <label for="name"  class="form-label">Middle name</label>
-                </div>
-                  
-                <div class="form-floating form-content1">
-                  <input type="name" id="name" placeholder="e.g. Zelalem" class="form-control"/>
-                  <label for="name"  class="form-label">Last name</label>
-                </div>
-                <div class="form-floating form-content1 ">
-                  <input type="number" id="age" placeholder="e.g. 19" class="form-control"/>
-                  <label for="age"  class="form-label">Age</label>
-                </div>
-                <div class="form-floating form-content1 ">
-                  <input type="email" id="email" placeholder="e.g. zel@gmail.com" class="form-control"/>
-                  <label for="email"  class="form-label">Email</label>
-                </div>
-                <div class="form-floating form-content1">
-                  <input type="phone" id="phone" placeholder="e.g. +251905487849" class="form-control"/>
-                  <label for="phone"  class="form-label">Phone</label>
-                </div>
-              </div>
-                <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="form-content2" data-aos="fade-right" data-aos-delay="200">
-                 <label for="grade" class="form-label">Grade</label>
-                    <select name="grade" id="grade" class="form-select">
-                      <option value="grade-9">Grade 9</option>
-                      <option value="grade-9">Grade 10</option>
-                      <option value="grade-9">Grade 11</option>
-                      <option value="grade-9">Grade 12</option>
-                    </select>
-                  </div>
-                    <div class="form-floating write-text form-content2 ">
-                    <textarea
-                     name="query"
-                     id="query" 
-                     style="height: 150px;"
-                     class="form-control"
-                     placeholder="write a message">
-                    </textarea>
-                    <label for="query">Write a message</label>
-                  </div>
-                  <div class="text-center  form-content3">
-                    <button type="submit" class="btn btn-success">Submit</button>
-                  </div>
-                </div>
-              </div>
-                </form>
+                <form action="data_check.php" method="POST" data-aos="fade-right" data-aos-delay="200">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="form-floating form-content1">
+                <input type="text" id="fname" name="fname" placeholder="e.g. Zelalem" class="form-control" required/>
+                <label for="fname" class="form-label">First name</label>
+            </div>
+            <div class="form-floating form-content1">
+                <input type="text" id="mname" name="mname" placeholder="e.g. Zelalem" class="form-control"/>
+                <label for="mname" class="form-label">Middle name</label>
+            </div>
+            <div class="form-floating form-content1">
+                <input type="text" id="lname" name="lname" placeholder="e.g. Zelalem" class="form-control"/>
+                <label for="lname" class="form-label">Last name</label>
+            </div>
+            <div class="form-floating form-content1">
+                <input type="number" id="age" name="age" placeholder="e.g. 19" class="form-control" required/>
+                <label for="age" class="form-label">Age</label>
+            </div>
+            <div class="form-floating form-content1">
+                <input type="email" id="email" name="email" placeholder="e.g. zel@gmail.com" class="form-control" required/>
+                <label for="email" class="form-label">Email</label>
+            </div>
+            <div class="form-floating form-content1">
+                <input type="tel" id="phone" name="phone" placeholder="e.g. +251905487849" class="form-control" required/>
+                <label for="phone" class="form-label">Phone</label>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="form-content2" data-aos="fade-right" data-aos-delay="200">
+                <label for="grade" class="form-label">Grade</label>
+                <select name="grade" id="grade" class="form-select" required>
+                    <option value="">Select Grade</option>
+                    <option value="grade-9">Grade 9</option>
+                    <option value="grade-10">Grade 10</option>
+                    <option value="grade-11">Grade 11</option>
+                    <option value="grade-12">Grade 12</option>
+                </select>
+            </div>
+            <div class="form-floating write-text form-content2">
+                <textarea name="message" id="message" style="height: 150px;" class="form-control" placeholder="write a message" required></textarea>
+                <label for="message">Write a message</label>
+            </div>
+            <div class="text-center form-content3">
+                <button type="submit" name="apply" class="btn btn-success">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>
+
              
             </div>
             </div>

@@ -32,16 +32,16 @@
                 <div class="offcanvas-body  flex-lg-row py-4 pe-4 p-lg-0">
                   <ul class="navbar-nav justify-content-center align-items-center fs-5 flex-grow-1 pe-3">
                     <li class="nav-item mx-2">
-                      <a class="nav-link" href="index.html">Home</a>
+                      <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item mx-2">
-                      <a class="nav-link" href="about.html">About</a>
+                      <a class="nav-link" href="about.php">About</a>
                     </li>
                     <li class="nav-item mx-2">
-                      <a class="nav-link " href="admission.html">Admission</a>
+                      <a class="nav-link " href="admissionhtml.php">Admission</a>
                     </li>
                     <li class="nav-item mx-2">
-                        <a class="nav-link " href="academics.html">Academics</a>
+                        <a class="nav-link " href="academics.php">Academics</a>
                       </li>
                       <!-- <li class="nav-item mx-2">
                         <a class="nav-link " href="#contact">Arts</a>
@@ -52,13 +52,13 @@
                       </li> -->
                      
                       <li class="nav-item mx-2">
-                        <a class="nav-link " href="studentlife.html">Student life</a>
+                        <a class="nav-link " href="studentlife.php">Student life</a>
                       </li>
                       <li class="nav-item mx-2">
-                        <a class="nav-link " href="newsletter.html"> Newsletter</a>
+                        <a class="nav-link " href="newsletter.php"> Newsletter</a>
                       </li>
                        <li class="nav-item mx-2">
-                        <a class="nav-link " href="calender.html">calender</a>
+                        <a class="nav-link " href="calender.php">calender</a>
                       </li>
                       <!-- <li>
                         <form class="d-flex pe-3 mx-2 py-3 search-bar">
@@ -69,7 +69,7 @@
                   </ul>
                   <hr></hr>
                   <div class="d-flex flex-sm-column flex-lg-row justify-content-center align-items-center gap-3 login">
-                    <a href="#" class=" text-decoration-none text-blue rounded-4 px-3 py-1" >Login</a>
+                    <a href="login.php" class=" text-decoration-none text-blue rounded-4 px-3 py-1" >Login</a>
                     <a href="#" class=" text-decoration-none px-3 py-1
                     rounded-4"
                     >Sign Up</a>
@@ -536,16 +536,16 @@
     <div class="col-lg-6 col-md-6 col-sm-12">
       <ul class="footer-navbar">
         <li class="nav-item mx-2">
-          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="index.php">Home</a>
         </li>
         <li class="nav-item mx-2">
-          <a class="nav-link" href="about.html">About</a>
+          <a class="nav-link" href="about.php">About</a>
         </li>
         <li class="nav-item mx-2">
-          <a class="nav-link " href="admission.html">Admission</a>
+          <a class="nav-link " href="admission.php">Admission</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link " href="academics.html">Academics</a>
+            <a class="nav-link " href="academics.php">Academics</a>
           </li>
           <!-- <li class="nav-item mx-2">
             <a class="nav-link " href="#contact">Arts</a>
@@ -556,13 +556,13 @@
           </li> -->
          
           <li class="nav-item mx-2">
-            <a class="nav-link " href="studentlife.html">Student life</a>
+            <a class="nav-link " href="studentlife.php">Student life</a>
           </li>
           <li class="nav-item mx-2">
-            <a class="nav-link " href="newsletter.html"> Newsletter</a>
+            <a class="nav-link " href="newsletter.php"> Newsletter</a>
           </li>
            <li class="nav-item mx-2">
-            <a class="nav-link " href="calender.html">calender</a>
+            <a class="nav-link " href="calender.php">calender</a>
           </li>
       </ul>
     </div>
