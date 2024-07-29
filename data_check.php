@@ -25,10 +25,8 @@ if (isset($_POST['apply'])) {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
     $grade = $_POST['grade'];
+    $stream = $_POST['stream']; // Capture stream data
     $message = $_POST['message'];
-
-    // Debugging output
-    // echo "fname: $fname, mname: $mname, lname: $lname, age: $age, email: $email, phone: $phone, grade: $grade, message: $message<br>";
 
     // Check if the entry already exists
     $check_stmt = $data->prepare("SELECT COUNT(*) FROM admission WHERE email = ?");
@@ -42,14 +40,14 @@ if (isset($_POST['apply'])) {
         $message = "You are attempting to register multiple times. An entry with the same email already exists in the admission table.";
     } else {
         // Prepare the SQL statement
-        $stmt = $data->prepare("INSERT INTO admission (fname, mname, lname, age, email, phone, grade, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $data->prepare("INSERT INTO admission (fname, mname, lname, age, email, phone, grade, stream, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         if ($stmt === FALSE) {
             die("Prepare failed: " . $data->error);
         }
 
         // Bind parameters
-        $stmt->bind_param("sssisiss", $fname, $mname, $lname, $age, $email, $phone, $grade, $message);
+        $stmt->bind_param("sssisisss", $fname, $mname, $lname, $age, $email, $phone, $grade, $stream, $message);
 
         // Execute the statement
         if ($stmt->execute()) {

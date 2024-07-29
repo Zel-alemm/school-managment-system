@@ -50,33 +50,33 @@ if($_SESSION['message'])
           </div>
           <div class="offcanvas-body flex-lg-row py-4 pe-4 p-lg-0">
             <ul class="navbar-nav justify-content-center align-items-center fs-5 flex-grow-1 pe-3">
-                <li class="nav-item mx-2">
-                    <a class="nav-link" href="index.html">Home</a>
-                  </li>
-                  <li class="nav-item mx-2">
-                    <a class="nav-link" href="about.html">About</a>
-                  </li>
-                  <li class="nav-item mx-2">
-                    <a class="nav-link " href="admission.html">Admission</a>
-                  </li>
-                  <li class="nav-item mx-2">
-                      <a class="nav-link " href="academics.html">Academics</a>
-                    </li>
-                   
-                    <li class="nav-item mx-2">
-                      <a class="nav-link " href="studentlife.html">Student life</a>
-                    </li>
-                    <li class="nav-item mx-2">
-                      <a class="nav-link " href="newsletter.html"> Newsletter</a>
-                    </li>
-                     <li class="nav-item mx-2">
-                      <a class="nav-link " href="calender.html">calender</a>
-                    </li>
+            <li class="nav-item mx-2">
+            <a class="nav-link" href="index.php">Home</a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link" href="about.php">About</a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link " href="admissionhtml.php">Admission</a>
+          </li>
+          <li class="nav-item mx-2">
+              <a class="nav-link " href="academics.php">Academics</a>
+            </li>
+           
+            <li class="nav-item mx-2">
+              <a class="nav-link " href="studentlife.php">Student life</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link " href="newsletter.php"> Newsletter</a>
+            </li>
+             <li class="nav-item mx-2">
+              <a class="nav-link " href="calender.php">calender</a>
+            </li>
             </ul>
             <hr></hr>
             <div class="d-flex flex-sm-column flex-lg-row justify-content-center align-items-center gap-3 login">
-              <a href="#" class="text-decoration-none text-blue rounded-4 px-3 py-1">Login</a>
-              <a href="#" class="text-decoration-none px-3 py-1 rounded-4">Sign Up</a>
+              <a href="login.php" class="text-decoration-none text-blue rounded-4 px-3 py-1">Login</a>
+              <a href="login.php#registerForm" class="text-decoration-none px-3 py-1 rounded-4">Sign Up</a>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@ if($_SESSION['message'])
                 <div class="form-title text-center" data-aos="fade-right" data-aos-delay="200">
                   <h1>Please fill the form presented below for registration</h1>
                 </div>
-                <form action="data_check.php" method="POST" data-aos="fade-right" data-aos-delay="200">
+              <form action="data_check.php" method="POST" data-aos="fade-right" data-aos-delay="200">
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-floating form-content1">
@@ -159,15 +159,22 @@ if($_SESSION['message'])
             <div class="form-content2" data-aos="fade-right" data-aos-delay="200">
                 <label for="grade" class="form-label">Grade</label>
                 <select name="grade" id="grade" class="form-select" required>
-                    <option value="">Select Grade</option>
-                    <option value="grade-9">Grade 9</option>
-                    <option value="grade-10">Grade 10</option>
-                    <option value="grade-11">Grade 11</option>
-                    <option value="grade-12">Grade 12</option>
+                    <option value="9">Grade 9</option>
+                    <option value="10">Grade 10</option>
+                    <option value="11">Grade 11</option>
+                    <option value="12">Grade 12</option>
+                </select>
+            </div>
+            <div class="form-content2" data-aos="fade-right" data-aos-delay="200">
+                <label for="stream" class="form-label">Stream</label>
+                <select name="stream" id="stream" class="form-select" required>
+                    <option value="Natural">Natura Science</option>
+                    <option value="Social">Social Science</option>
+                    <option value="Non-stream">Non-stream</option>
                 </select>
             </div>
             <div class="form-floating write-text form-content2">
-                <textarea name="message" id="message" style="height: 150px;" class="form-control" placeholder="write a message" required></textarea>
+                <textarea name="message" id="message" style="height: 150px;" class="form-control" placeholder="Write a message" required></textarea>
                 <label for="message">Write a message</label>
             </div>
             <div class="text-center form-content3">
@@ -176,6 +183,7 @@ if($_SESSION['message'])
         </div>
     </div>
 </form>
+
 
              
             </div>
@@ -199,28 +207,28 @@ if($_SESSION['message'])
       </div>
       <div class="col-lg-6 col-md-6 col-sm-12">
         <ul class="footer-navbar">
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="index.php">Home</a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link" href="about.php">About</a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link " href="admissionhtml.php">Admission</a>
+          </li>
+          <li class="nav-item mx-2">
+              <a class="nav-link " href="academics.php">Academics</a>
+            </li>
+           
             <li class="nav-item mx-2">
-                <a class="nav-link" href="index.html">Home</a>
-              </li>
-              <li class="nav-item mx-2">
-                <a class="nav-link" href="about.html">About</a>
-              </li>
-              <li class="nav-item mx-2">
-                <a class="nav-link " href="admission.html">Admission</a>
-              </li>
-              <li class="nav-item mx-2">
-                  <a class="nav-link " href="academics.html">Academics</a>
-                </li>
-               
-                <li class="nav-item mx-2">
-                  <a class="nav-link " href="studentlife.html">Student life</a>
-                </li>
-                <li class="nav-item mx-2">
-                  <a class="nav-link " href="newsletter.html"> Newsletter</a>
-                </li>
-                 <li class="nav-item mx-2">
-                  <a class="nav-link " href="calender.html">calender</a>
-                </li>
+              <a class="nav-link " href="studentlife.php">Student life</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link " href="newsletter.php"> Newsletter</a>
+            </li>
+             <li class="nav-item mx-2">
+              <a class="nav-link " href="calender.php">calender</a>
+            </li>
         </ul>
       </div>
     </div>

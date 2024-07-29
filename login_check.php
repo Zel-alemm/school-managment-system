@@ -1,7 +1,5 @@
 <?php
-error_reporting(0);
 session_start();
-
 $host = "localhost";
 $user = "root";
 $password = "";
@@ -26,11 +24,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            if ($pass == $row['password']) { // Using plain password check for this example
-                return $row; // Return the user's data if credentials match
+            if (password_verify($pass, $row['password'])) {
+                return $row;
             }
         }
-        return false; // Return false if no match is found
+        return false;
     }
 
     // Check each table for the user
@@ -43,11 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($user !== false) {
-        // Store the username and usertype in the session
         $_SESSION['username'] = $name;
         $_SESSION['usertype'] = $user['usertype'];
 
-        // Redirect based on usertype
         if ($user['usertype'] == "admin") {
             header("Location: adminhome.php");
         } elseif ($user['usertype'] == "student") {

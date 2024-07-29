@@ -4,10 +4,11 @@ session_start();
 if (!isset($_SESSION['username'])) {
     header("location:login.php");
     exit();
-} elseif ($_SESSION['usertype'] == 'student') {
+} elseif ($_SESSION['usertype'] != 'admin') {
     header("location:login.php");
     exit();
 }
+
 
 $host = "localhost";
 $user = "root";
@@ -21,7 +22,7 @@ if ($data === false) {
 
 // Fetch the admin's full name
 $username = mysqli_real_escape_string($data, $_SESSION['username']);
-$sql_user = "SELECT fname, mname, lname FROM user WHERE username = ?";
+$sql_user = "SELECT fname, mname, lname FROM admins WHERE username = ?";
 $stmt_user = $data->prepare($sql_user);
 
 if ($stmt_user) {
@@ -58,10 +59,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = $_POST['phone'];
     $department = $_POST['department'];
     $usertype = 'teacher'; // User type is always 'teacher'
-    $password = $lname . '@1234'; // Auto-generated password
+    $password = strtolower($lname) . '@1234'; // Auto-generated password
 
     // Check if teacher with same details already exists
-    $check_user_sql = "SELECT id FROM user WHERE fname = ? AND mname = ? AND lname = ? AND phone = ?";
+    $check_user_sql = "SELECT id FROM teachers WHERE fname = ? AND mname = ? AND lname = ? AND phone = ?";
     $stmt = $data->prepare($check_user_sql);
 
     if ($stmt) {
@@ -76,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $newID = generateID($data, $usertype);
 
             // Insert into user table
-            $insert_sql = "INSERT INTO user (id, fname, mname, lname, email, phone, usertype, password, username, department)
+            $insert_sql = "INSERT INTO teachers (id, fname, mname, lname, email, phone, usertype, password, username, department)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insert_stmt = $data->prepare($insert_sql);
 
@@ -104,7 +105,7 @@ $data->close();
 
 // Function to generate the next ID
 function generateID($conn, $usertype) {
-    if ($usertype == 'admin') {
+    if ($usertype == 'teacher') {
         $prefix = 'LSST170';
         $startNumber = 100;
         $numLength = 3;
@@ -114,7 +115,7 @@ function generateID($conn, $usertype) {
         $numLength = 4;
     }
 
-    $sql = "SELECT id FROM user WHERE id LIKE '$prefix%' ORDER BY id DESC LIMIT 1";
+    $sql = "SELECT id FROM teachers WHERE id LIKE '$prefix%' ORDER BY id DESC LIMIT 1";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

@@ -109,7 +109,9 @@ session_start(); // Ensure this is at the very beginning of the file
       margin-top: 1rem; /* Space above the grade select field */
     }
     #registerForm {
-      margin-top: 16rem;
+      margin-top: 30rem;
+      m;
+      
     }
   </style>
 </head>
@@ -185,12 +187,21 @@ session_start(); // Ensure this is at the very beginning of the file
         <label for="grade" class="form-label">Grade</label>
         <select name="grade" id="grade" class="form-select" required>
           <option value="">Select Grade</option>
-          <option value="grade-9">Grade 9</option>
-          <option value="grade-10">Grade 10</option>
-          <option value="grade-11">Grade 11</option>
-          <option value="grade-12">Grade 12</option>
+          <option value="9">Grade 9</option>
+          <option value="10">Grade 10</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
         </select>
       </div>
+      <div class="form-content2" data-aos="fade-right" data-aos-delay="200">
+                <label for="stream" class="form-label">Stream</label>
+                <select name="stream" id="stream" class="form-select" required>
+                    <option value="">Select Stream</option>
+                    <option value="Natural">Natura Sciencel</option>
+                    <option value="Social">Social Science</option>
+                    <option value="Non-stream">Non-stream</option>
+                </select>
+            </div>
       <div class="form-floating write-text form-content2">
         <textarea name="message" id="message" style="height: 150px;" class="form-control" placeholder="write a message" required></textarea>
         <label for="message">Write a message</label>

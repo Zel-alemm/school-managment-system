@@ -4,7 +4,7 @@ session_start();
 if (!isset($_SESSION['username'])) {
     header("location:login.php");
     exit();
-} elseif ($_SESSION['usertype'] != 'student') {
+} elseif ($_SESSION['usertype'] != 'teacher') {
     header("location:login.php");
     exit();
 }
@@ -21,9 +21,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch student name
+// Fetch teacher name
 $user = $_SESSION['username'];
-$sql = "SELECT fname, mname, lname FROM students WHERE username = ?";
+$sql = "SELECT fname, mname, lname FROM teachers WHERE username = ?";
 $stmt = $conn->prepare($sql);
 
 if ($stmt === false) {
@@ -43,21 +43,20 @@ $fullName = trim($fname . ' ' . $mname . ' ' . $lname);
 // Sanitize output
 $fullName = htmlspecialchars($fullName);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="student.css">
-  <title>Student Dashboard</title>
+    <link rel="stylesheet" href="teacher.css">
+     <title>teacher Dashboard</title>
 </head>
 <body>
-<?php include 'student_sidebar.php'; ?>
+<?php include 'teacher_sidebar.php'; ?>
 
     <div class="content">
-        <!-- <h1>Welcome to Your Dashboard</h1>
-        <p>Here you can view your courses, results, and manage your profile settings.</p> -->
+        <h1>Welcome to Your Dashboard</h1>
+        <p>Here you can view your courses, results, and manage your profile settings.</p>
     </div>
 </body>
 </html>

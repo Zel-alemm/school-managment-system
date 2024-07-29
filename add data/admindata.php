@@ -57,61 +57,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $age = $_POST['age'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
-    $usertype = $_POST['usertype']; // Should be 'admin' for adding an admin
-    $password = strtolower($lname) . '@1234'; // Auto-generated password
+    $usertype = "admin";
+    $password = $mname . '@1234'; // Auto-generated password
+    $username = generateUsername($fname, $lname);
 
-    // Check if admin with same details already exists
-    $check_admin_sql = "SELECT id FROM admins WHERE fname = ? AND mname = ? AND lname = ? AND phone = ? AND email= ?";
+    // Check if admin with the same username already exists
+    $check_admin_sql = "SELECT id FROM admins WHERE username = ?";
     $stmt = $data->prepare($check_admin_sql);
 
     if ($stmt) {
-        $stmt->bind_param("sssss", $fname, $mname, $lname, $phone, $email);
+        $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $message = "Admin with the same details already exists.";
+            $message = "Admin with the same username already exists.";
         } else {
-            // Check if email or phone already exists
-            $check_user_sql = "SELECT id FROM admins WHERE email = ? OR phone = ?";
-            $stmt = $data->prepare($check_user_sql);
+            // Generate a unique ID
+            $newID = generateID($data, $usertype);
 
-            if ($stmt) {
-                $stmt->bind_param("ss", $email, $phone);
-                $stmt->execute();
-                $result = $stmt->get_result();
+            // Insert into admins table
+            $insert_sql = "INSERT INTO admins (id, fname, mname, lname, age, email, phone, usertype, password, username)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insert_stmt = $data->prepare($insert_sql);
 
-                if ($result->num_rows > 0) {
-                    $message = "Email or phone already exists.";
+            if ($insert_stmt) {
+                $password_hash = password_hash($password, PASSWORD_BCRYPT);
+                $insert_stmt->bind_param("ssssisssss", $newID, $fname, $mname, $lname, $age, $email, $phone, $usertype, $password_hash, $username);
+
+                if ($insert_stmt->execute()) {
+                    $message = "Admin added successfully.";
                 } else {
-                    // Generate a unique ID
-                    $newID = generateID($data, $usertype);
-
-                    // Insert into user table
-                    $insert_sql = "INSERT INTO admins (id, fname, mname, lname, age, email, phone, usertype, password, username)
-                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                    $insert_stmt = $data->prepare($insert_sql);
-
-                    if ($insert_stmt) {
-                        $password_hash = password_hash($password, PASSWORD_BCRYPT);
-                        $insert_stmt->bind_param("ssssisssss", $newID, $fname, $mname, $lname, $age, $email, $phone, $usertype, $password_hash, $newID);
-
-                        if ($insert_stmt->execute()) {
-                            $message = "Admin added successfully.";
-                        } else {
-                            $message = "Error inserting admin: " . $insert_stmt->error;
-                        }
-                        $insert_stmt->close();
-                    } else {
-                        $message = "Error preparing insert statement: " . $data->error;
-                    }
+                    $message = "Error inserting admin: " . $insert_stmt->error;
                 }
-                $stmt->close();
+                $insert_stmt->close();
             } else {
-                $message = "Error preparing check statement: " . $data->error;
+                $message = "Error preparing insert statement: " . $data->error;
             }
         }
-        // $stmt->close();
+        $stmt->close();
     } else {
         $message = "Error preparing check statement: " . $data->error;
     }
@@ -122,7 +106,7 @@ $data->close();
 // Function to generate the next ID
 function generateID($conn, $usertype) {
     if ($usertype == 'admin') {
-        $prefix = 'LSSA170';
+        $prefix = 'LSST170';
         $startNumber = 100;
         $numLength = 3;
     } else {
@@ -143,6 +127,11 @@ function generateID($conn, $usertype) {
     }
 
     return $prefix . $newNumber;
+}
+
+// Function to generate a username from the full name
+function generateUsername($fname, $lname) {
+    return strtolower(substr($fname, 0, 1) . $lname);
 }
 ?>
 

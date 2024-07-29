@@ -23,7 +23,7 @@ if ($conn->connect_error) {
 
 // Fetch the full name of the logged-in admin
 $user = $_SESSION['username'];
-$sql = "SELECT fname, mname, lname FROM user WHERE username = ?";
+$sql = "SELECT fname, mname, lname FROM admins WHERE username = ?";
 $stmt = $conn->prepare($sql);
 
 if ($stmt === false) {

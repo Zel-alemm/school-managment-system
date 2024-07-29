@@ -70,7 +70,7 @@
                   <hr></hr>
                   <div class="d-flex flex-sm-column flex-lg-row justify-content-center align-items-center gap-3 login">
                     <a href="login.php" class=" text-decoration-none text-blue rounded-4 px-3 py-1" >Login</a>
-                    <a href="#" class=" text-decoration-none px-3 py-1
+                    <a href="login.php#registerForm" class=" text-decoration-none px-3 py-1
                     rounded-4"
                     >Sign Up</a>
                   </div>

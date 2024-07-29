@@ -1,3 +1,5 @@
+php
+Copy code
 <?php
 session_start();
 
@@ -33,7 +35,7 @@ if (isset($_POST['accept'])) {
         $message = "Email and phone are required.";
     } else {
         // Fetch the applicant details
-        $sql = "SELECT fname, mname, lname, age, email, phone, grade FROM admission WHERE email = ? AND phone = ?";
+        $sql = "SELECT fname, mname, lname, age, email, phone, grade, stream FROM admission WHERE email = ? AND phone = ?";
         if ($stmt = $data->prepare($sql)) {
             $stmt->bind_param("ss", $email, $phone);
             $stmt->execute();
@@ -45,9 +47,9 @@ if (isset($_POST['accept'])) {
                 $applicant = $result->fetch_assoc();
 
                 // Check if the applicant is already registered
-                $check_user_sql = "SELECT id FROM user WHERE email = ? OR phone = ?";
+                $check_user_sql = "SELECT id FROM students WHERE fname = ? AND mname = ? AND lname = ? AND phone = ?";
                 if ($check_stmt = $data->prepare($check_user_sql)) {
-                    $check_stmt->bind_param("ss", $email, $phone);
+                    $check_stmt->bind_param("ssss", $applicant['fname'], $applicant['mname'], $applicant['lname'], $phone);
                     $check_stmt->execute();
                     $check_result = $check_stmt->get_result();
 
@@ -56,14 +58,15 @@ if (isset($_POST['accept'])) {
                     } else {
                         // Generate a unique ID and password for the new user
                         $usertype = 'student'; // Adjust as needed
-                        $newID = generateID($data, $usertype);
-                        $password = $applicant['lname'] . '@1234';
+                        $grade = $applicant['grade']; // Extract the grade
+                        $newID = generateID($data, $usertype, $grade); // Pass the grade as the third argument
+                        $password = strtolower($applicant['lname']) . '@1234';
 
                         // Insert into user table
-                        $insert_sql = "INSERT INTO user (id, fname, mname, lname, age, email, phone, usertype, password, username, grade)
-                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        $insert_sql = "INSERT INTO students (id, fname, mname, lname, age, email, phone, usertype, password, username, grade, stream)
+                                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         if ($insert_stmt = $data->prepare($insert_sql)) {
-                            $insert_stmt->bind_param("ssssissssss", $newID, $applicant['fname'], $applicant['mname'], $applicant['lname'], $applicant['age'], $applicant['email'], $applicant['phone'], $usertype, password_hash($password, PASSWORD_BCRYPT), $newID, $applicant['grade']);
+                            $insert_stmt->bind_param("ssssisisssss", $newID, $applicant['fname'], $applicant['mname'], $applicant['lname'], $applicant['age'], $applicant['email'], $applicant['phone'], $usertype, password_hash($password, PASSWORD_BCRYPT), $newID, $applicant['grade'], $applicant['stream']);
 
                             if ($insert_stmt->execute()) {
                                 // Remove from admission table
@@ -102,7 +105,7 @@ if (isset($_POST['accept'])) {
 }
 
 $username = mysqli_real_escape_string($data, $_SESSION['username']);
-$sql_user = "SELECT fname, mname, lname FROM user WHERE username = '$username'";
+$sql_user = "SELECT fname, mname, lname FROM admins WHERE username = '$username'";
 $result_user = mysqli_query($data, $sql_user);
 
 if ($result_user === false) {
@@ -118,7 +121,7 @@ if ($user_info) {
 }
 
 // Fetch the admission data
-$sql = "SELECT fname, mname, lname, age, email, phone, grade, message FROM admission WHERE verified = FALSE";
+$sql = "SELECT fname, mname, lname, age, email, phone, grade, message, stream FROM admission WHERE verified = FALSE";
 $result = mysqli_query($data, $sql);
 
 if ($result === false) {
@@ -127,29 +130,51 @@ if ($result === false) {
 
 $data->close();
 
-function generateID($conn, $usertype) {
-    if ($usertype == 'admin') {
-        $prefix = 'LSST170';
-        $startNumber = 100;
-        $numLength = 3;
-    } else {
-        $prefix = 'LSS170';
-        $startNumber = 1000;
-        $numLength = 4;
+function generateID($conn, $usertype, $grade) {
+    // Determine the prefix based on the grade
+    switch ($grade) {
+        case 9:
+            $prefix = 'LSSS170';
+            break;
+        case 10:
+            $prefix = 'LSSS160';
+            break;
+        case 11:
+            $prefix = 'LSSS150';
+            break;
+        case 12:
+            $prefix = 'LSSS140';
+            break;
+        default:
+            $prefix = 'LSSS999'; // Default prefix for unknown grade
+            break;
     }
 
-    $sql = "SELECT id FROM user WHERE id LIKE '$prefix%' ORDER BY id DESC LIMIT 1";
-    $result = $conn->query($sql);
+    // SQL query to fetch the last ID with the specific prefix
+    $sql = "SELECT id FROM students WHERE id LIKE ? ORDER BY id DESC LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $likeParam = $prefix . '%';
+    $stmt->bind_param("s", $likeParam);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result === false) {
+        die("Error in query: " . $conn->error);
+    }
 
     if ($result->num_rows > 0) {
-        $lastID = $result->fetch_assoc()['id'];
-        $number = (int)substr($lastID, -$numLength);
-        $newNumber = str_pad($number + 1, $numLength, '0', STR_PAD_LEFT);
+        $row = $result->fetch_assoc();
+        $lastID = $row['id'];
+        // Extract the numeric part from the ID
+        $number = (int)substr($lastID, strlen($prefix));
+        $newNumber = str_pad($number + 1, 3, '0', STR_PAD_LEFT);
     } else {
-        $newNumber = str_pad($startNumber, $numLength, '0', STR_PAD_LEFT);
+        $newNumber = '100'; // Starting number if no previous records
     }
 
-    return $prefix . $newNumber;
+    $newID = $prefix . $newNumber;
+
+    return $newID;
 }
 ?>
 <!DOCTYPE html>
@@ -178,14 +203,6 @@ function generateID($conn, $usertype) {
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="#">Admin Dashboard</a>
-        <div class="username">Welcome, <?php echo htmlspecialchars($fullName); ?></div>
-        <div class="logout">
-            <a href="logout.php">Logout</a>
-        </div>
-    </header>
-
     <?php include 'admin_sidebar.php'; ?>
 
     <div class="content">
@@ -203,6 +220,7 @@ function generateID($conn, $usertype) {
                     <th>Email</th>
                     <th>Phone</th>
                     <th>Grade</th>
+                    <th>Stream</th>
                     <th>Message</th>
                     <th>Action</th>
                 </tr>
@@ -216,6 +234,7 @@ function generateID($conn, $usertype) {
                         <td><?php echo htmlspecialchars($info['email']); ?></td>
                         <td><?php echo htmlspecialchars($info['phone']); ?></td>
                         <td><?php echo htmlspecialchars($info['grade']); ?></td>
+                        <td><?php echo htmlspecialchars($info['stream']); ?></td>
                         <td><?php echo htmlspecialchars($info['message']); ?></td>
                         <td>
                             <form method="POST" action="">

@@ -18,6 +18,8 @@
             <li><a href="add_teacher.php">Add Teacher</a></li>
             <li><a href="view_teacher.php">View Teacher</a></li>
             <li><a href="add_courses.php">Add Courses</a></li>
-           
+            <li><a href="courses.php">Avaliable courses</a></li> 
+            <li><a href="assign_teacher_student.php">Asign Courses</a></li>
+            <li><a href="approve_grades.php">Aprove grade</a></li>
         </ul>
     </aside>
