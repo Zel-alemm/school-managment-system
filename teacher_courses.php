@@ -42,10 +42,12 @@ $fullName = trim($fname . ' ' . $mname . ' ' . $lname);
 // Sanitize output
 $fullName = htmlspecialchars($fullName);
 
-// Fetch courses the teacher is teaching
-$sql = "SELECT courses.course_id, courses.course_name 
+// Fetch courses and semesters the teacher is teaching
+$sql = "SELECT DISTINCT courses.course_id, courses.course_name, semesters.semester_name
         FROM teacher_courses
         JOIN courses ON teacher_courses.course_id = courses.course_id
+        JOIN enrollments ON courses.course_id = enrollments.course_id
+        JOIN semesters ON enrollments.semester_id = semesters.semester_id
         WHERE teacher_courses.teacher_id = (SELECT id FROM teachers WHERE username = ?)";
 $stmt = $conn->prepare($sql);
 
@@ -74,9 +76,6 @@ $conn->close();
     <link rel="stylesheet" href="teacher.css">
     <title>My Courses - Teacher Dashboard</title>
     <style>
-       
-
-
         .content h1 {
             color: #00ADB5;
         }
@@ -136,6 +135,7 @@ $conn->close();
                     <tr>
                         <th>Course ID</th>
                         <th>Course Name</th>
+                        <th>Semester</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,6 +143,7 @@ $conn->close();
                         <tr>
                             <td><?php echo htmlspecialchars($course['course_id']); ?></td>
                             <td><?php echo htmlspecialchars($course['course_name']); ?></td>
+                            <td><?php echo htmlspecialchars($course['semester_name']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

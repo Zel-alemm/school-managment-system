@@ -50,7 +50,7 @@ if ($stmt_user) {
 
 // Handle form submission for approving grades
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'approve') {
-    $gradeLevel = $_POST['grade_level']; // This is the student's grade level
+    $gradeLevel = $_POST['grade_level'];
 
     // Fetch all pending grades for the specified grade level
     $sql_pending = "SELECT pg.*, s.grade AS student_grade
@@ -72,24 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
         $final_exam = $row['final_exam'];
         $pending_id = $row['id'];
 
-        $total_mark = $quiz + $midterm + $assignment + $final_exam;
-
-        if ($total_mark >= 90) {
-            $grade = 'A';
-        } elseif ($total_mark >= 80) {
-            $grade = 'B';
-        } elseif ($total_mark >= 70) {
-            $grade = 'C';
-        } elseif ($total_mark >= 60) {
-            $grade = 'D';
-        } else {
-            $grade = 'F';
-        }
-
-        $sql_insert = "INSERT INTO grades (student_id, course_id, teacher_id, quiz, midterm, assignment, final_exam, total_mark, grade) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql_insert = "INSERT INTO grades (student_id, course_id, teacher_id, quiz, midterm, assignment, final_exam) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt_insert = $conn->prepare($sql_insert);
-        $stmt_insert->bind_param("sssddddds", $student_id, $course_id, $teacher_id, $quiz, $midterm, $assignment, $final_exam, $total_mark, $grade);
+        $stmt_insert->bind_param("sssdddd", $student_id, $course_id, $teacher_id, $quiz, $midterm, $assignment, $final_exam);
         $stmt_insert->execute();
 
         if ($stmt_insert->affected_rows > 0) {
@@ -119,7 +105,6 @@ $sql = "SELECT pg.id AS pending_id,
                pg.midterm,
                pg.assignment,
                pg.final_exam,
-               pg.total_mark,
                s.grade AS student_grade
         FROM pending_grades pg
         JOIN students s ON pg.student_id = s.id
@@ -258,7 +243,7 @@ $conn->close();
 <?php endforeach; ?>
 
 <?php if (empty($pending_grades)): ?>
-    <tr><td colspan="8">No pending grades available.</td></tr>
+    <tr><td colspan="9">No pending grades available.</td></tr>
 <?php endif; ?>
 
     </div>

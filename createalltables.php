@@ -72,19 +72,14 @@ $tables = [
         reference VARCHAR(255)
     )",
     
-    "CREATE TABLE IF NOT EXISTS semesters (
-        semester_id INT AUTO_INCREMENT PRIMARY KEY,
-        semester_name VARCHAR(50) NOT NULL
-    )",
-    
     "CREATE TABLE IF NOT EXISTS enrollments (
         student_id VARCHAR(10),
         course_id VARCHAR(10),
-        semester_id INT NOT NULL,
+        semester_id VARCHAR(10),
+        registration_date DATE,
         PRIMARY KEY (student_id, course_id, semester_id),
         FOREIGN KEY (student_id) REFERENCES students(id),
-        FOREIGN KEY (course_id) REFERENCES courses(course_id),
-        FOREIGN KEY (semester_id) REFERENCES semesters(semester_id)
+        FOREIGN KEY (course_id) REFERENCES courses(course_id)
     )",
     
     "CREATE TABLE IF NOT EXISTS teacher_courses (
@@ -100,6 +95,9 @@ $tables = [
         student_id VARCHAR(10),
         course_id VARCHAR(10),
         teacher_id VARCHAR(10),
+        semester_id VARCHAR(10),
+        registration_date DATE,
+        completed BOOLEAN DEFAULT FALSE,
         FOREIGN KEY (student_id) REFERENCES students(id),
         FOREIGN KEY (course_id) REFERENCES courses(course_id),
         FOREIGN KEY (teacher_id) REFERENCES teachers(id)
@@ -110,7 +108,6 @@ $tables = [
         student_id VARCHAR(10),
         course_id VARCHAR(10),
         teacher_id VARCHAR(10),
-        semester_id INT NOT NULL,
         quiz FLOAT,
         midterm FLOAT,
         assignment FLOAT,
@@ -118,8 +115,7 @@ $tables = [
         total_mark FLOAT GENERATED ALWAYS AS (quiz + midterm + assignment + final_exam) STORED,
         FOREIGN KEY (student_id) REFERENCES students(id),
         FOREIGN KEY (course_id) REFERENCES courses(course_id),
-        FOREIGN KEY (teacher_id) REFERENCES teachers(id),
-        FOREIGN KEY (semester_id) REFERENCES semesters(semester_id)
+        FOREIGN KEY (teacher_id) REFERENCES teachers(id)
     )",
 
     "CREATE TABLE IF NOT EXISTS grades (
@@ -127,7 +123,6 @@ $tables = [
         student_id VARCHAR(10),
         course_id VARCHAR(10),
         teacher_id VARCHAR(10),
-        semester_id INT NOT NULL,
         quiz FLOAT,
         midterm FLOAT,
         assignment FLOAT,
@@ -144,8 +139,7 @@ $tables = [
         ) STORED,
         FOREIGN KEY (student_id) REFERENCES students(id),
         FOREIGN KEY (course_id) REFERENCES courses(course_id),
-        FOREIGN KEY (teacher_id) REFERENCES teachers(id),
-        FOREIGN KEY (semester_id) REFERENCES semesters(semester_id)
+        FOREIGN KEY (teacher_id) REFERENCES teachers(id)
     )"
 ];
 
@@ -157,6 +151,7 @@ foreach ($tables as $table) {
         echo "Error creating table: " . $conn->error . "<br>";
     }
 }
+
 
 // Close connection
 $conn->close();

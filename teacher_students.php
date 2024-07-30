@@ -42,14 +42,16 @@ $fullName = trim($fname . ' ' . $mname . ' ' . $lname);
 // Sanitize output
 $fullName = htmlspecialchars($fullName);
 
-// Fetch students taught by the teacher
-$sql = "SELECT DISTINCT students.id, students.fname, students.mname, students.lname 
+// Fetch students taught by the teacher, grouped by semester and ID prefixes
+$sql = "SELECT DISTINCT students.id, students.fname, students.mname, students.lname, semesters.semester_name 
         FROM enrollments
         JOIN courses ON enrollments.course_id = courses.course_id
         JOIN teacher_courses ON courses.course_id = teacher_courses.course_id
         JOIN teachers ON teacher_courses.teacher_id = teachers.id
         JOIN students ON enrollments.student_id = students.id
-        WHERE teachers.username = ?";
+        JOIN semesters ON enrollments.semester_id = semesters.semester_id
+        WHERE teachers.username = ?
+        ORDER BY semesters.semester_name, students.id";
 $stmt = $conn->prepare($sql);
 
 if ($stmt === false) {
@@ -77,8 +79,6 @@ $conn->close();
     <link rel="stylesheet" href="teacher.css">
     <title>Students Taught - Teacher Dashboard</title>
     <style>
-      
-
         .content h1 {
             color: #00ADB5;
         }
@@ -115,9 +115,30 @@ $conn->close();
             background-color: #00ADB5;
             color: #222831;
         }
+
+        .semester-table {
+            margin-top: 20px;
+            border: 2px solid #00ADB5;
+        }
+
+        .semester-table th {
+            background-color: #00ADB5;
+        }
+
+        .semester-table td {
+            background-color: #222831;
+            color: #EEEEEE;
+        }
     </style>
 </head>
-
+<body>
+    <header class="header">
+        <a href="#">Teacher Dashboard</a>
+        <div class="username">Welcome, <?php echo $fullName; ?></div>
+        <div class="logout">
+            <a href="logout.php">Logout</a>
+        </div>
+    </header>
 
     <?php include 'teacher_sidebar.php'; ?>
 
@@ -126,26 +147,49 @@ $conn->close();
         <?php if (empty($students)): ?>
             <p>You are not teaching any students.</p>
         <?php else: ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Student ID</th>
-                        <th>First Name</th>
-                        <th>Middle Name</th>
-                        <th>Last Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($students as $student): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($student['id']); ?></td>
-                            <td><?php echo htmlspecialchars($student['fname']); ?></td>
-                            <td><?php echo htmlspecialchars($student['mname']); ?></td>
-                            <td><?php echo htmlspecialchars($student['lname']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+            <?php
+            $groupedStudents = [];
+            foreach ($students as $student) {
+                $semester = $student['semester_name'];
+                $idPrefix = substr($student['id'], 0, 7); // Extract the prefix of ID
+                
+                if (!isset($groupedStudents[$semester])) {
+                    $groupedStudents[$semester] = [];
+                }
+
+                if (!isset($groupedStudents[$semester][$idPrefix])) {
+                    $groupedStudents[$semester][$idPrefix] = [];
+                }
+
+                $groupedStudents[$semester][$idPrefix][] = $student;
+            }
+
+            foreach ($groupedStudents as $semester => $prefixes): ?>
+                <h2>Semester: <?php echo htmlspecialchars($semester); ?></h2>
+                <?php foreach ($prefixes as $prefix => $students): ?>
+                    <h3>ID Prefix: <?php echo htmlspecialchars($prefix); ?></h3>
+                    <table class="semester-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>First Name</th>
+                                <th>Middle Name</th>
+                                <th>Last Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($students as $student): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($student['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['fname']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['mname']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['lname']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
         <?php endif; ?>
     </div>
 </body>

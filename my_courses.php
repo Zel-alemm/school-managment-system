@@ -1,136 +1,109 @@
 <?php
 session_start();
-
 if (!isset($_SESSION['username'])) {
-    header("location:login.php");
-    exit();
-} elseif ($_SESSION['usertype'] != 'student') {
-    header("location:login.php");
+    header("Location: login.php");
     exit();
 }
 
-// Database connection
-$servername = "localhost";
-$username = "root";
+$host = "localhost";
+$user = "root";
 $password = "";
-$dbname = "lumamedb";
+$db = "lumamedb";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$data = mysqli_connect($host, $user, $password, $db);
+if ($data === false) {
+    die("Connection error");
 }
 
-// Fetch student name
-$user = $_SESSION['username'];
-$sql = "SELECT fname, mname, lname FROM students WHERE username = ?";
-$stmt = $conn->prepare($sql);
+// Fetch the admin's full name
+$username = mysqli_real_escape_string($data, $_SESSION['username']);
+$sql_user = "SELECT fname, mname, lname FROM admins WHERE username = ?";
+$stmt_user = $data->prepare($sql_user);
 
-if ($stmt === false) {
-    die("Prepare failed: " . $conn->error);
+if ($stmt_user) {
+    $stmt_user->bind_param("s", $username);
+    $stmt_user->execute();
+    $result_user = $stmt_user->get_result();
+
+    if ($result_user === false) {
+        die("Error in query: " . mysqli_error($data));
+    }
+
+    $user_info = $result_user->fetch_assoc();
+
+    if ($user_info) {
+        $fullName = htmlspecialchars($user_info['fname']) . ' ' . htmlspecialchars($user_info['mname']) . ' ' . htmlspecialchars($user_info['lname']);
+    } else {
+        $fullName = "Unknown User";
+    }
+
+    $stmt_user->close();
+} else {
+    die("Error preparing query: " . $data->error);
 }
 
-$stmt->bind_param("s", $user);
-$stmt->execute();
-$stmt->bind_result($fname, $mname, $lname);
-$stmt->fetch();
-$stmt->close();
+// Fetch courses data along with semester information
+$sql = "SELECT c.course_id, c.course_name, c.reference, e.semester_id 
+        FROM courses c
+        JOIN enrollments e ON c.course_id = e.course_id
+        ORDER BY e.semester_id";
+$result = mysqli_query($data, $sql);
 
-// Combine names
-$fullName = trim($fname . ' ' . $mname . ' ' . $lname);
-
-// Sanitize output
-$fullName = htmlspecialchars($fullName);
-
-// Fetch courses and teacher names for the student from the student_teacher_assignments table
-$sql = "SELECT courses.course_id, courses.course_name, 
-               CONCAT(teachers.fname, ' ', teachers.mname, ' ', teachers.lname) AS teacher_fullname
-        FROM student_teacher_assignments
-        JOIN courses ON student_teacher_assignments.course_id = courses.course_id
-        JOIN teachers ON student_teacher_assignments.teacher_id = teachers.id
-        WHERE student_teacher_assignments.student_id = (SELECT id FROM students WHERE username = ?)";
-$stmt = $conn->prepare($sql);
-
-if ($stmt === false) {
-    die("Prepare failed: " . $conn->error);
-}
-
-$stmt->bind_param("s", $user);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$courses = [];
-while ($row = $result->fetch_assoc()) {
-    $courses[] = $row;
-}
-
-$stmt->close();
-$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="student.css">
-    <title>Student Dashboard - My Courses</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <title>Admin Dashboard</title><!-- Link to your external CSS -->
     <style>
         table {
-            width: 80%; /* Adjust the width to make it smaller */
-            margin: 20px auto; /* Center the table and add margin */
+            width: 100%;
             border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #222831;
+            background-color: #393E46;
         }
         th, td {
-            padding: 8px; /* Reduce padding to make the table more compact */
+            padding: 10px;
             text-align: left;
+            border: 1px solid #00ADB5;
         }
         th {
             background-color: #00ADB5;
-            color: #EEEEEE;
-            font-size: 14px; /* Smaller font size for header */
-        }
-        td {
-            font-size: 12px; /* Smaller font size for table cells */
-        }
-        tr:nth-child(even) {
-            background-color: #393E46;
-        }
-        tr:nth-child(odd) {
-            background-color: #393E46;
+            color: #222831;
         }
     </style>
 </head>
 <body>
-<?php include 'student_sidebar.php'; ?>
+    <?php include 'admin_sidebar.php'; ?>
 
     <div class="content">
-        <h1>My Courses</h1>
-        <?php if (empty($courses)): ?>
-            <p>You are not enrolled in any courses.</p>
-        <?php else: ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Course ID</th>
-                        <th>Course Name</th>
-                        <th>Teacher Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($courses as $course): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($course['course_id']); ?></td>
-                            <td><?php echo htmlspecialchars($course['course_name']); ?></td>
-                            <td><?php echo htmlspecialchars($course['teacher_fullname']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
+        <h1 class="text-center">Available Courses</h1>
+        <?php
+        if (mysqli_num_rows($result) > 0) {
+            $current_semester = -1;
+            while ($row = mysqli_fetch_assoc($result)) {
+                if ($current_semester != $row['semester_id']) {
+                    if ($current_semester != -1) {
+                        echo "</tbody></table>";
+                    }
+                    $current_semester = $row['semester_id'];
+                    echo "<h2>Semester " . htmlspecialchars($current_semester) . "</h2>";
+                    echo "<table class='table table-striped'>";
+                    echo "<thead><tr><th>Course ID</th><th>Course Name</th><th>Reference</th></tr></thead><tbody>";
+                }
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($row['course_id']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['course_name']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['reference']) . "</td>";
+                echo "</tr>";
+            }
+            echo "</tbody></table>";
+        } else {
+            echo "<p>No courses available</p>";
+        }
+        ?>
     </div>
 </body>
 </html>

@@ -7,11 +7,6 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Debugging output for student ID
-// if (!isset($_SESSION['username'])) {
-//     die("Student ID is not set in session. Ensure login sets the session ID correctly.");
-// }
-
 $student_id = $_SESSION['username']; // Fetch student ID from session
 
 // Database connection
@@ -21,7 +16,6 @@ $password = ""; // Your database password
 $dbname = "lumamedb"; // Your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -47,11 +41,13 @@ $fullName = trim($fname . ' ' . $mname . ' ' . $lname);
 
 // Sanitize output
 $fullName = htmlspecialchars($fullName);
-// Fetch student results
-$sql = "SELECT g.course_id, c.course_name, g.quiz, g.midterm, g.assignment, g.final_exam, g.total_mark, g.grade
+
+// Fetch student results grouped by semester
+$sql = "SELECT g.semester_id, g.course_id, c.course_name, g.quiz, g.midterm, g.assignment, g.final_exam, g.total_mark, g.grade
         FROM grades g
         JOIN courses c ON g.course_id = c.course_id
-        WHERE g.student_id = ?";
+        WHERE g.student_id = ?
+        ORDER BY g.semester_id, g.course_id";
 
 $stmt = $conn->prepare($sql);
 
@@ -63,10 +59,6 @@ $stmt->bind_param("s", $student_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $results = $result->fetch_all(MYSQLI_ASSOC);
-
-if (empty($results)) {
-    echo "No results found for student ID: $student_id";
-}
 
 $stmt->close();
 $conn->close();
@@ -115,43 +107,50 @@ $conn->close();
 <body>
 <?php include 'student_sidebar.php'; ?> <!-- Ensure you include your sidebar -->
 
-    <div class="content">
-        <h1>My Results</h1>
+<div class="content">
+    <h1>My Results</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Course ID</th>
-                    <th>Course Name</th>
-                    <th>Quiz</th>
-                    <th>Midterm</th>
-                    <th>Assignment</th>
-                    <th>Final Exam</th>
-                    <th>Total Mark</th>
-                    <th>Grade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($results)): ?>
-                    <?php foreach ($results as $result): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($result['course_id']); ?></td>
-                            <td><?php echo htmlspecialchars($result['course_name']); ?></td>
-                            <td><?php echo htmlspecialchars($result['quiz']); ?></td>
-                            <td><?php echo htmlspecialchars($result['midterm']); ?></td>
-                            <td><?php echo htmlspecialchars($result['assignment']); ?></td>
-                            <td><?php echo htmlspecialchars($result['final_exam']); ?></td>
-                            <td><?php echo htmlspecialchars($result['total_mark']); ?></td>
-                            <td><?php echo htmlspecialchars($result['grade']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="8">No results available.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+    <?php
+    if (!empty($results)) {
+        $current_semester = null;
+        foreach ($results as $result) {
+            if ($current_semester !== $result['semester_id']) {
+                if ($current_semester !== null) {
+                    echo "</tbody></table>";
+                }
+                $current_semester = $result['semester_id'];
+                echo "<h2>Semester " . htmlspecialchars($current_semester) . "</h2>";
+                echo "<table class='table table-striped'>
+                        <thead>
+                            <tr>
+                                <th>Course ID</th>
+                                <th>Course Name</th>
+                                <th>Quiz</th>
+                                <th>Midterm</th>
+                                <th>Assignment</th>
+                                <th>Final Exam</th>
+                                <th>Total Mark</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+            }
+            echo "<tr>";
+            echo "<td>" . htmlspecialchars($result['course_id']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['course_name']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['quiz']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['midterm']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['assignment']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['final_exam']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['total_mark']) . "</td>";
+            echo "<td>" . htmlspecialchars($result['grade']) . "</td>";
+            echo "</tr>";
+        }
+        echo "</tbody></table>";
+    } else {
+        echo "<p>No results available for this student.</p>";
+    }
+    ?>
+</div>
 </body>
 </html>

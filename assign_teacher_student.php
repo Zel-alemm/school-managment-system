@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// Initialize message variables
+$message = "";
+$message_type = "";
+
 // Check if the user is logged in and is an admin
 if (!isset($_SESSION['username']) || $_SESSION['usertype'] != 'admin') {
     header("location:login.php");
@@ -22,6 +26,7 @@ ini_set('display_errors', 1);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
 // Fetch the admin's full name
 $username = mysqli_real_escape_string($conn, $_SESSION['username']);
 $sql_user = "SELECT fname, mname, lname FROM admins WHERE username = ?";
@@ -33,7 +38,7 @@ if ($stmt_user) {
     $result_user = $stmt_user->get_result();
 
     if ($result_user === false) {
-        die("Error in query: " . mysqli_error($data));
+        die("Error in query: " . mysqli_error($conn));
     }
 
     $user_info = $result_user->fetch_assoc();
@@ -46,7 +51,20 @@ if ($stmt_user) {
 
     $stmt_user->close();
 } else {
-    die("Error preparing query: " . $data->error);
+    die("Error preparing query: " . $conn->error);
+}
+
+// Fetch semesters
+$semesters = [];
+$semester_query = "SELECT semester_id, semester_name FROM semesters";
+$semester_result = $conn->query($semester_query);
+
+if ($semester_result) {
+    while ($row = $semester_result->fetch_assoc()) {
+        $semesters[] = $row;
+    }
+} else {
+    die("Error fetching semesters: " . $conn->error);
 }
 
 // Handle teacher-student assignment
@@ -54,6 +72,7 @@ if (isset($_POST['assign_teacher_student'])) {
     $courseId = $_POST['course_id'];
     $studentIds = isset($_POST['student_ids']) ? explode(',', $_POST['student_ids']) : [];
     $teacherIds = isset($_POST['teacher_ids']) ? explode(',', $_POST['teacher_ids']) : [];
+    $semesterId = $_POST['semester_id'];
 
     // Trim any extra spaces from student IDs and teacher IDs
     $studentIds = array_map('trim', $studentIds);
@@ -66,7 +85,8 @@ if (isset($_POST['assign_teacher_student'])) {
     $courseCheck->store_result();
 
     if ($courseCheck->num_rows === 0) {
-        echo "Course ID does not exist.";
+        $message = "Course ID does not exist.";
+        $message_type = "error";
         $courseCheck->close();
         $conn->close();
         exit();
@@ -84,7 +104,8 @@ if (isset($_POST['assign_teacher_student'])) {
         $studentsCheck->store_result();
         if ($studentsCheck->num_rows < count($studentIds)) {
             $studentIdsValid = false;
-            echo "Some Student IDs do not exist.";
+            $message = "Some Student IDs do not exist.";
+            $message_type = "error";
         }
         $studentsCheck->close();
     }
@@ -97,7 +118,8 @@ if (isset($_POST['assign_teacher_student'])) {
         $teachersCheck->store_result();
         if ($teachersCheck->num_rows < count($teacherIds)) {
             $teacherIdsValid = false;
-            echo "Some Teacher IDs do not exist.";
+            $message = "Some Teacher IDs do not exist.";
+            $message_type = "error";
         }
         $teachersCheck->close();
     }
@@ -111,44 +133,68 @@ if (isset($_POST['assign_teacher_student'])) {
     $conn->begin_transaction();
 
     try {
+        // Prepare statement for checking existing assignments
+        $checkExistStmt = $conn->prepare("SELECT student_id FROM student_teacher_assignments WHERE student_id = ? AND course_id = ?  AND semester_id = ?");
+        if (!$checkExistStmt) {
+          $message="";
+        }
+
         // Prepare statement for insertion
-        $stmt = $conn->prepare("INSERT INTO student_teacher_assignments (student_id, course_id, teacher_id) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO student_teacher_assignments (student_id, course_id, teacher_id, semester_id) VALUES (?, ?, ?, ?)");
         if (!$stmt) {
             throw new Exception("Prepare failed: " . $conn->error);
         }
 
+        $duplicateAssignments = [];
+
         foreach ($studentIds as $studentId) {
             foreach ($teacherIds as $teacherId) {
-                $stmt->bind_param("sss", $studentId, $courseId, $teacherId);
-                if (!$stmt->execute()) {
-                    throw new Exception("Error assigning course $courseId to student $studentId and teacher $teacherId: " . $stmt->error);
+                // Check if the assignment already exists
+                $checkExistStmt->bind_param("sss", $studentId, $courseId, $semesterId);
+                $checkExistStmt->execute();
+                $checkExistStmt->store_result();
+
+                if ($checkExistStmt->num_rows > 0) {
+                    $duplicateAssignments[] = "Student ID: $studentId, Teacher ID: $teacherId, Course ID: $courseId, Semester ID: $semesterId";
+                } else {
+                    // Assign if not already assigned
+                    $stmt->bind_param("ssss", $studentId, $courseId, $teacherId, $semesterId);
+                    if (!$stmt->execute()) {
+                        throw new Exception("Error assigning course $courseId to student $studentId and teacher $teacherId: " . $stmt->error);
+                    }
                 }
             }
         }
         $stmt->close();
+        $checkExistStmt->close();
 
-        // Commit transaction
-        $conn->commit();
-        echo "Assignments added successfully.";
+        if (!empty($duplicateAssignments)) {
+             $message = "The following assignments already exist:\n"; //. implode("\n", $duplicateAssignments);
+            $message_type = "error";
+        } else {
+            // Commit transaction
+            $conn->commit();
+            $message = "Assignments added successfully.";
+            $message_type = "success";
+        }
     } catch (Exception $e) {
         // Rollback transaction
         $conn->rollback();
-        echo "Failed to add assignments: " . $e->getMessage();
+        $message = "Failed to add assignments: " . $e->getMessage();
+        $message_type = "error";
     }
 }
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="admin.css">
-    <title>Admin Dashboard</title><!-- Link to your external CSS -->
+    <title>Admin Dashboard</title>
     <style>
-         <style>
         .content {
             margin-left: 220px;
             padding: 20px;
@@ -172,7 +218,7 @@ $conn->close();
             margin: 10px 0 5px;
             color: #00ADB5;
         }
-        input[type="text"], input[type="submit"] {
+        input[type="text"], input[type="submit"], select {
             width: 100%;
             padding: 10px;
             margin: 5px 0 10px;
@@ -193,31 +239,68 @@ $conn->close();
             font-size: 16px;
         }
         button:hover, input[type="submit"]:hover {
-            background-color: #007A7A;
+            background-color: #007bff;
         }
-        .message {
-            text-align: center;
+        .alert {
             margin-top: 20px;
-            color: #00ADB5;
+            padding: 10px;
+            border-radius: 5px;
         }
-    </style>
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 220px;
+            right: 0;
+            height: 60px;
+            background-color: #393E46;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+        .top-bar .welcome-message {
+            color: #EEEEEE;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
 <?php include 'admin_sidebar.php'; ?>
 
     <div class="content">
-        <h1>Assign Teachers and Students to Courses</h1>
+        <h1>Assign Teachers & Students to Courses</h1>
+       
         <form method="POST" action="">
-            <label for="course_id">Course ID:</label>
+        <?php if ($message != "") { ?>
+            <div class="alert alert-<?php echo $message_type; ?>">
+                <?php echo nl2br(htmlspecialchars($message)); ?>
+            </div>
+        <?php } ?>
+            <label for="course_id">Course ID</label>
             <input type="text" id="course_id" name="course_id" required>
-            <br><br>
-            <label for="student_ids">Student IDs (comma-separated):</label>
+
+            <label for="student_ids">Student IDs (comma separated)</label>
             <input type="text" id="student_ids" name="student_ids">
-            <br><br>
-            <label for="teacher_ids">Teacher IDs (comma-separated):</label>
+
+            <label for="teacher_ids">Teacher IDs (comma separated)</label>
             <input type="text" id="teacher_ids" name="teacher_ids">
-            <br><br>
+
+            <label for="semester_id">Semester</label>
+            <select id="semester_id" name="semester_id" required>
+                <?php foreach ($semesters as $semester) { ?>
+                    <option value="<?php echo $semester['semester_id']; ?>"><?php echo htmlspecialchars($semester['semester_name']); ?></option>
+                <?php } ?>
+            </select>
+
             <input type="submit" name="assign_teacher_student" value="Assign">
         </form>
     </div>

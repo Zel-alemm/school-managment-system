@@ -43,51 +43,50 @@ $fullName = htmlspecialchars($fullName);
 // Handle form submission for uploading grades
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'upload') {
     $teacher_id = $_POST['teacher_id'];
-    $quiz = $_POST['quiz'];
-    $midterm = $_POST['midterm'];
-    $assignment = $_POST['assignment'];
-    $final_exam = $_POST['final_exam'];
+    
+    // Loop through each semester
+    foreach ($_POST['semesters'] as $semester_id => $students) {
+        foreach ($students as $student_id => $courses) {
+            foreach ($courses as $course_id => $marks) {
+                $quiz_score = $marks['quiz'];
+                $midterm_score = $marks['midterm'];
+                $assignment_score = $marks['assignment'];
+                $final_exam_score = $marks['final_exam'];
 
-    // Loop through each student-course combination
-    foreach ($quiz as $student_id => $courses) {
-        foreach ($courses as $course_id => $quiz_score) {
-            $midterm_score = $midterm[$student_id][$course_id];
-            $assignment_score = $assignment[$student_id][$course_id];
-            $final_exam_score = $final_exam[$student_id][$course_id];
+                // Validate input
+                if (!is_numeric($quiz_score) || !is_numeric($midterm_score) || !is_numeric($assignment_score) || !is_numeric($final_exam_score)) {
+                    $error = "All fields are required and must be numeric.";
+                    continue;
+                }
 
-            // Validate input
-            if (!is_numeric($quiz_score) || !is_numeric($midterm_score) || !is_numeric($assignment_score) || !is_numeric($final_exam_score)) {
-                $error = "All fields are required and must be numeric.";
-                continue;
-            }
+                // Calculate total mark based on weights
+                $total_mark = ($quiz_score * 0.10) + ($midterm_score * 0.20) + ($assignment_score * 0.10) + ($final_exam_score * 0.60);
 
-            // Calculate total mark based on weights
-            $total_mark = ($quiz_score * 0.10) + ($midterm_score * 0.20) + ($assignment_score * 0.10) + ($final_exam_score * 0.60);
-
-            // Check if the grade already exists
-            $sql = "SELECT * FROM pending_grades WHERE student_id = ? AND course_id = ? AND teacher_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $student_id, $course_id, $teacher_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                // Update existing grade
-                $sql = "UPDATE pending_grades SET quiz = ?, midterm = ?, assignment = ?, final_exam = ?, total_mark = ? WHERE student_id = ? AND course_id = ? AND teacher_id = ?";
+                // Check if the grade already exists
+                $sql = "SELECT * FROM pending_grades WHERE student_id = ? AND course_id = ? AND teacher_id = ? AND semester_id = ?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ddddssss", $quiz_score, $midterm_score, $assignment_score, $final_exam_score, $total_mark, $student_id, $course_id, $teacher_id);
-            } else {
-                // Insert new grade
-                $sql = "INSERT INTO pending_grades (student_id, course_id, quiz, midterm, assignment, final_exam, total_mark, teacher_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssssddds", $student_id, $course_id, $quiz_score, $midterm_score, $assignment_score, $final_exam_score, $total_mark, $teacher_id);
-            }
+                $stmt->bind_param("ssss", $student_id, $course_id, $teacher_id, $semester_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            if ($stmt === false) {
-                die("Prepare failed: " . $conn->error);
-            }
+                if ($result->num_rows > 0) {
+                    // Update existing grade
+                    $sql = "UPDATE pending_grades SET quiz = ?, midterm = ?, assignment = ?, final_exam = ?, total_mark = ? WHERE student_id = ? AND course_id = ? AND teacher_id = ? AND semester_id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ddddssss", $quiz_score, $midterm_score, $assignment_score, $final_exam_score, $total_mark, $student_id, $course_id, $teacher_id, $semester_id);
+                } else {
+                    // Insert new grade
+                    $sql = "INSERT INTO pending_grades (student_id, course_id, quiz, midterm, assignment, final_exam, total_mark, teacher_id, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssssddsss", $student_id, $course_id, $quiz_score, $midterm_score, $assignment_score, $final_exam_score, $total_mark, $teacher_id, $semester_id);
+                }
 
-            $stmt->execute();
+                if ($stmt === false) {
+                    die("Prepare failed: " . $conn->error);
+                }
+
+                $stmt->execute();
+            }
         }
     }
 
@@ -100,14 +99,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     $stmt->close();
 }
 
-// Fetch students and courses related to the teacher
-$sql = "SELECT s.id AS student_id, CONCAT(s.fname, ' ', s.mname, ' ', s.lname) AS student_name, c.course_id, c.course_name
+// Fetch students and courses related to the teacher, grouped by semester and ID prefixes
+$sql = "SELECT s.id AS student_id, CONCAT(s.fname, ' ', s.mname, ' ', s.lname) AS student_name, c.course_id, c.course_name, e.semester_id
         FROM students s
         JOIN enrollments e ON s.id = e.student_id
         JOIN courses c ON e.course_id = c.course_id
         JOIN teacher_courses tc ON c.course_id = tc.course_id
         JOIN teachers t ON tc.teacher_id = t.id
-        WHERE t.username = ?";
+        WHERE t.username = ?
+        ORDER BY e.semester_id, s.id";
 
 $stmt = $conn->prepare($sql);
 
@@ -122,6 +122,23 @@ $enrollments = $result->fetch_all(MYSQLI_ASSOC);
 
 $stmt->close();
 $conn->close();
+
+// Organize enrollments by semester and ID prefix
+$groupedEnrollments = [];
+foreach ($enrollments as $enrollment) {
+    $semester = $enrollment['semester_id'];
+    $idPrefix = substr($enrollment['student_id'], 0, 7); // Extract the prefix of ID
+    
+    if (!isset($groupedEnrollments[$semester])) {
+        $groupedEnrollments[$semester] = [];
+    }
+    
+    if (!isset($groupedEnrollments[$semester][$idPrefix])) {
+        $groupedEnrollments[$semester][$idPrefix] = [];
+    }
+
+    $groupedEnrollments[$semester][$idPrefix][] = $enrollment;
+}
 ?>
 
 <!DOCTYPE html>
@@ -209,32 +226,39 @@ $conn->close();
 
         <form method="POST">
             <input type="hidden" name="teacher_id" value="<?php echo htmlspecialchars($user); ?>">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Course ID</th>
-                        <th>Student ID</th>
-                        <th>Student Name</th>
-                        <th>Quiz</th>
-                        <th>Midterm</th>
-                        <th>Assignment</th>
-                        <th>Final Exam</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($enrollments as $enrollment): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($enrollment['course_id']); ?></td>
-                            <td><?php echo htmlspecialchars($enrollment['student_id']); ?></td>
-                            <td><?php echo htmlspecialchars($enrollment['student_name']); ?></td>
-                            <td><input type="number" name="quiz[<?php echo htmlspecialchars($enrollment['student_id']); ?>][<?php echo htmlspecialchars($enrollment['course_id']); ?>]" step="0.01" required></td>
-                            <td><input type="number" name="midterm[<?php echo htmlspecialchars($enrollment['student_id']); ?>][<?php echo htmlspecialchars($enrollment['course_id']); ?>]" step="0.01" required></td>
-                            <td><input type="number" name="assignment[<?php echo htmlspecialchars($enrollment['student_id']); ?>][<?php echo htmlspecialchars($enrollment['course_id']); ?>]" step="0.01" required></td>
-                            <td><input type="number" name="final_exam[<?php echo htmlspecialchars($enrollment['student_id']); ?>][<?php echo htmlspecialchars($enrollment['course_id']); ?>]" step="0.01" required></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+            <?php foreach ($groupedEnrollments as $semesterId => $prefixes): ?>
+                <h2>Semester: <?php echo htmlspecialchars($semesterId); ?></h2>
+                <input type="hidden" name="semesters[<?php echo htmlspecialchars($semesterId); ?>]" value="<?php echo htmlspecialchars($semesterId); ?>">
+                <?php foreach ($prefixes as $prefix => $students): ?>
+                    <h3>ID Prefix: <?php echo htmlspecialchars($prefix); ?></h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course ID</th>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Quiz</th>
+                                <th>Midterm</th>
+                                <th>Assignment</th>
+                                <th>Final Exam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($students as $student): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($student['course_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['student_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['student_name']); ?></td>
+                                    <td><input type="number" name="semesters[<?php echo htmlspecialchars($semesterId); ?>][<?php echo htmlspecialchars($student['student_id']); ?>][<?php echo htmlspecialchars($student['course_id']); ?>][quiz]" step="0.01"></td>
+                                    <td><input type="number" name="semesters[<?php echo htmlspecialchars($semesterId); ?>][<?php echo htmlspecialchars($student['student_id']); ?>][<?php echo htmlspecialchars($student['course_id']); ?>][midterm]" step="0.01"></td>
+                                    <td><input type="number" name="semesters[<?php echo htmlspecialchars($semesterId); ?>][<?php echo htmlspecialchars($student['student_id']); ?>][<?php echo htmlspecialchars($student['course_id']); ?>][assignment]" step="0.01"></td>
+                                    <td><input type="number" name="semesters[<?php echo htmlspecialchars($semesterId); ?>][<?php echo htmlspecialchars($student['student_id']); ?>][<?php echo htmlspecialchars($student['course_id']); ?>][final_exam]" step="0.01"></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
             <button type="submit" name="action" value="upload" class="upload-button">Upload Marks</button>
         </form>
     </div>
